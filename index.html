@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JDM LEGENDS</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Permanent+Marker&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF006E;
+    --hot-pink: #FF4DA6;
+    --neon-pink: #FF00CC;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --card-bg: #151515;
+    --white: #FFFFFF;
+    --yellow: #FFE600;
+    --cyan: #00F5FF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--black);
+    font-family: 'Orbitron', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Animated noise grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 60px 20px 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1a001a 0%, var(--black) 100%);
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pink), var(--neon-pink), var(--pink), transparent);
+    animation: scanline 3s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .header-tag {
+    font-family: 'Permanent Marker', cursive;
+    color: var(--pink);
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    animation: flicker 4s infinite;
+  }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.3; }
+    97% { opacity: 1; }
+    98% { opacity: 0.5; }
+    99% { opacity: 1; }
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 160px);
+    color: var(--white);
+    line-height: 0.85;
+    letter-spacing: 4px;
+    position: relative;
+    display: inline-block;
+    text-shadow: 
+      0 0 30px rgba(255,0,110,0.8),
+      0 0 60px rgba(255,0,204,0.4),
+      4px 4px 0 var(--pink),
+      8px 8px 0 rgba(255,0,110,0.3);
+  }
+
+  .header-title span {
+    color: var(--pink);
+    -webkit-text-stroke: 2px var(--neon-pink);
+    text-shadow: 
+      0 0 20px var(--neon-pink),
+      0 0 40px var(--pink),
+      3px 3px 0 #8B0050;
+  }
+
+  .header-sub {
+    font-family: 'Orbitron', sans-serif;
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    letter-spacing: 8px;
+    margin-top: 20px;
+    text-transform: uppercase;
+  }
+
+  .pink-line {
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pink), var(--neon-pink));
+    margin: 20px auto;
+    position: relative;
+  }
+  .pink-line::before, .pink-line::after {
+    content: '◆';
+    position: absolute;
+    color: var(--pink);
+    font-size: 8px;
+    top: -5px;
+  }
+  .pink-line::before { left: -12px; }
+  .pink-line::after { right: -12px; }
+
+  /* GRID */
+  .cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+    padding: 2px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+
+  /* CARD */
+  .car-card {
+    position: relative;
+    background: var(--card-bg);
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 3/4;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .car-card:hover {
+    transform: scale(1.02);
+    z-index: 10;
+  }
+
+  .car-card:hover .card-overlay {
+    opacity: 1;
+  }
+
+  .car-card:hover .card-img {
+    transform: scale(1.08);
+    filter: brightness(0.5) saturate(1.2);
+  }
+
+  .car-card:hover .car-info {
+    transform: translateY(0);
+  }
+
+  .car-card:hover .hp-badge {
+    animation: pulse-badge 0.5s ease forwards;
+  }
+
+  @keyframes pulse-badge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease;
+    filter: brightness(0.8) saturate(1.1);
+    display: block;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.95) 0%,
+      rgba(0,0,0,0.6) 40%,
+      rgba(255,0,110,0.1) 100%
+    );
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Corner accent */
+  .card-corner {
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    overflow: hidden;
+  }
+  .card-corner::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-left: 60px solid transparent;
+    border-top: 60px solid var(--pink);
+    opacity: 0.9;
+  }
+
+  /* Number label */
+  .card-number {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+  }
+
+  /* HP Badge */
+  .hp-badge {
+    position: absolute;
+    top: 14px;
+    right: 8px;
+    background: linear-gradient(135deg, var(--pink), var(--neon-pink));
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 1px;
+    padding: 4px 10px 2px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+    z-index: 5;
+  }
+
+  /* Car info */
+  .car-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px 18px 22px;
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 5;
+  }
+
+  .car-make {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--pink);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .car-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4vw, 38px);
+    color: var(--white);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 rgba(255,0,110,0.4), 0 0 20px rgba(255,0,110,0.3);
+  }
+
+  .car-year {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 3px;
+    margin-top: 6px;
+  }
+
+  .divider-line {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--pink), transparent);
+    margin: 8px 0;
+  }
+
+  .car-spec {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .car-spec span {
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  /* Pink scanline effect on card */
+  .car-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,0,110,0.08), transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
+  }
+  .car-card:hover::after {
+    left: 150%;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, var(--black), #1a001a);
+    border-top: 1px solid rgba(255,0,110,0.2);
+  }
+
+  .footer-text {
+    font-family: 'Permanent Marker', cursive;
+    color: var(--pink);
+    font-size: 28px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255,0,110,0.5);
+    animation: flicker 5s 1s infinite;
+  }
+
+  .footer-sub {
+    font-family: 'Orbitron', sans-serif;
+    color: rgba(255,255,255,0.2);
+    font-size: 9px;
+    letter-spacing: 6px;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  /* BG decorative elements */
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-decor::before {
+    content: 'JDM';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40vw;
+    color: rgba(255,0,110,0.02);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .grid-lines {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,0,110,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,0,110,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Entry animation */
+  .car-card {
+    animation: cardIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .car-card:nth-child(1) { animation-delay: 0.05s; }
+  .car-card:nth-child(2) { animation-delay: 0.1s; }
+  .car-card:nth-child(3) { animation-delay: 0.15s; }
+  .car-card:nth-child(4) { animation-delay: 0.2s; }
+  .car-card:nth-child(5) { animation-delay: 0.25s; }
+  .car-card:nth-child(6) { animation-delay: 0.3s; }
+  .car-card:nth-child(7) { animation-delay: 0.35s; }
+  .car-card:nth-child(8) { animation-delay: 0.4s; }
+  .car-card:nth-child(9) { animation-delay: 0.45s; }
+  .car-card:nth-child(10) { animation-delay: 0.5s; }
+  .car-card:nth-child(11) { animation-delay: 0.55s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Header animation */
+  header { animation: fadeDown 0.8s ease both; }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-decor"></div>
+<div class="grid-lines"></div>
+
+<header>
+  <div class="header-tag">★ Ultimate JDM Collection ★</div>
+  <div class="header-title">JDM<br><span>LEGENDS</span></div>
+  <div class="pink-line"></div>
+  <div class="header-sub">Japan Domestic Market · Performance Icons · Pure Street Culture</div>
+</header>
+
+<div class="cars-grid" id="carsGrid"></div>
+
+<footer>
+  <div class="footer-text">Stay Sideways. Stay Wild. 🔥</div>
+  <div class="footer-sub">© JDM Legends Gallery · No Slow Cars Allowed</div>
+</footer>
+
+<script>
+const cars = [
+  {
+    img: '/mnt/user-data/uploads/austris-augusts-G28hOq2Rik8-unsplash.jpg',
+    make: 'Nissan',
+    name: 'Skyline GT-R R34',
+    year: '1999–2002',
+    hp: '280 HP*',
+    spec: 'RB26DETT · AWD · Twin Turbo',
+    num: '01'
+  },
+  {
+    img: '/mnt/user-data/uploads/jasper-garratt-QNNI0RUNwv8-unsplash.jpg',
+    make: 'Nissan',
+    name: 'Skyline GT-R R32',
+    year: '1989–1994',
+    hp: '276 HP',
+    spec: 'RB26DETT · ATTESA AWD',
+    num: '02'
+  },
+  {
+    img: '/mnt/user-data/uploads/chris-demers-dEp8kX3W7dA-unsplash.jpg',
+    make: 'Nissan',
+    name: 'Silvia S14',
+    year: '1993–1998',
+    hp: '250 HP',
+    spec: 'SR20DET · RWD · Turbo',
+    num: '03'
+  },
+  {
+    img: '/mnt/user-data/uploads/wassim-chouak-keBp2WcK86U-unsplash.jpg',
+    make: 'Nissan',
+    name: 'GT-R R35',
+    year: '2007–Present',
+    hp: '565 HP',
+    spec: 'VR38DETT · ATTESA AWD',
+    num: '04'
+  },
+  {
+    img: '/mnt/user-data/uploads/chris-demers-yveHitu4uLQ-unsplash.jpg',
+    make: 'Nissan',
+    name: '180SX / 240SX',
+    year: '1989–1998',
+    hp: '205 HP',
+    spec: 'SR20DET · RWD · Drift King',
+    num: '05'
+  },
+  {
+    img: '/mnt/user-data/uploads/matteo-balzanelli-9OUv-fdqEI4-unsplash.jpg',
+    make: 'Mitsubishi',
+    name: 'Lancer Evo IX',
+    year: '2005–2007',
+    hp: '286 HP',
+    spec: '4G63T · AWD · WRC Legend',
+    num: '06'
+  },
+  {
+    img: '/mnt/user-data/uploads/anastase-maragos-1nbCLdfHANo-unsplash.jpg',
+    make: 'Mazda',
+    name: 'RX-7 FD3S',
+    year: '1992–2002',
+    hp: '255 HP',
+    spec: '13B-REW · Rotary Twin Turbo',
+    num: '07'
+  },
+  {
+    img: '/mnt/user-data/uploads/jason-garcia-OgGXM5syjuQ-unsplash.jpg',
+    make: 'Nissan',
+    name: 'Silvia S14 Kouki',
+    year: '1996–1998',
+    hp: '220 HP',
+    spec: 'SR20DET · RWD · Built',
+    num: '08'
+  },
+  {
+    img: '/mnt/user-data/uploads/anthony-bautista-KhqYRs1hoAk-unsplash.jpg',
+    make: 'Toyota',
+    name: 'GR Supra A90',
+    year: '2019–Present',
+    hp: '382 HP',
+    spec: 'B58 · RWD · Wide Body Kit',
+    num: '09'
+  },
+  {
+    img: '/mnt/user-data/uploads/calvin-priddell-P75qc7zpY9I-unsplash.jpg',
+    make: 'Nissan',
+    name: 'Silvia S15',
+    year: '1999–2002',
+    hp: '250 HP',
+    spec: 'SR20DET · RWD · Rocket Bunny',
+    num: '10'
+  },
+  {
+    img: '/mnt/user-data/uploads/anthony-bautista-ngsvXuGixaM-unsplash.jpg',
+    make: 'Toyota',
+    name: 'Supra MK4',
+    year: '1993–2002',
+    hp: '320 HP',
+    spec: '2JZ-GTE · RWD · Iconic',
+    num: '11'
+  }
+];
+
+const grid = document.getElementById('carsGrid');
+
+cars.forEach(car => {
+  const card = document.createElement('div');
+  card.className = 'car-card';
+  card.innerHTML = `
+    <img class="card-img" src="${car.img}" alt="${car.name}" loading="lazy" />
+    <div class="card-overlay"></div>
+    <div class="card-corner"></div>
+    <div class="card-number">${car.num}</div>
+    <div class="hp-badge">⚡ ${car.hp}</div>
+    <div class="car-info">
+      <div class="car-make">${car.make}</div>
+      <div class="car-name">${car.name}</div>
+      <div class="divider-line"></div>
+      <div class="car-year">${car.year}</div>
+      <div class="car-spec"><span>◈</span> ${car.spec}</div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
